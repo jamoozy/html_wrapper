@@ -3,6 +3,7 @@
 # This software is distributed under the terms of the GNU General Public
 # License, either version 3 or, at your discretion, any later version.
 
+require 'fileutils'
 require 'date'
 require 'uri'
 
@@ -182,7 +183,7 @@ class Runner
   end
 
   def run(&block)
-    Dir.delete @options.tmp if File.exists? @options.tmp
+    FileUtils.rm_r @options.tmp if File.exists? @options.tmp
     Dir.mkdir @options.tmp
 
     if @locales.size == 0 then
