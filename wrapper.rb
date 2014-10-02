@@ -10,11 +10,11 @@ require 'uri'
 # Convenience class to write contents to a file simply and easily.
 class IO
   # Writes <tt>content</tt> to <tt>fname</tt>.
-  def self.write(fname, content)
-    f = File.new(fname, 'w')
-    f.write(content)
-    f.close()
-  end
+#  def self.write(fname, content)
+#    f = File.new(fname, 'w')
+#    f.write(content)
+#    f.close()
+#  end
 end
 
 class LangLink
@@ -147,7 +147,7 @@ module HTMLUtil
   #   content:: The content to put in the file.
   #   block:: The user-written block to emit the HTML.
   def to_file(dir, content, block)
-    dir += "/#@locale" unless @local == nil
+    dir += "/#@locale" unless @locale == nil
     fname = "#{dir}/#@bname.#@ext"
     `mkdir -p #{dir}` unless File.directory?(dir)
     IO.write(fname, wrap(content, block))
@@ -172,7 +172,6 @@ class Wrapper
   attr_reader :locale, :other_locale, :bname
 
   def initialize(locale, bname, ext=:html, php_ok=true)
-    today = Date.today
     @locale = locale
     @other_locale = ((locale == :de) ? :us : :de)
     @bname = bname
@@ -233,17 +232,21 @@ class Runner
     Dir.mkdir @options.tmp
 
     if @locales.size == 0 then
-      Dir["#@dir/*.#@ext"].each do |f|
+      dir = "#@dir/*.#@ext"
+      Dir[dir].each do |f|
         generate(nil, f, /(.*)\.#@ext/, block)
       end
     else
+      print 'locales!'
       @locales.each do |l|
-        Dir["*.#{l}.#@ext"].each do |f|
+        dir = "#@dir/*.#{l}.#@ext"
+        Dir[dir].each do |f|
           generate(l, f, /(.*)\.#{l}\.#@ext/, block)
         end
       end
     end
 
+    Dir.mkdir("#{@options.tmp}/#@dir") if defined?(@dir) and @dir != './' and @dir != '.'
     @cps.each {|c| cp c }
     htaccess @ht
 
